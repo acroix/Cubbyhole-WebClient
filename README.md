@@ -1,4 +1,4 @@
-Cubbyhole-WebBrowser
+Cubbyhole-WebClient
 =================
 
-Cubbyhole Web Browser
+Cubbyhole Web Client
