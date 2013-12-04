@@ -1,12 +1,10 @@
 var express = require('express');
 var http    = require('http');
-var cors    = require('cors');
 
 var app = express();
 app.use(express.bodyParser());
-app.use(cors());
 app.set('port', 3000);
-
+app.use(express.static(__dirname + '/public'));
 
 var data = [
     { "name": "Dagny Taggart", "age": 39 },
