@@ -1,0 +1,20 @@
+{
+  "name": "public",
+  "version": "0.0.0",
+  "homepage": "https://github.com/acroix/Cubbyhole-WebClient",
+  "authors": [
+    "Alexandre Croix <125053@supinfo.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.3",
+    "foundation": "~5.0.2"
+  }
+}

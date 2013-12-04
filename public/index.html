@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="bower_components/foundation/css/foundation.min.css"/>
+</head>
+<body ng-app="app" ng-controller="AppCtrl as app">
+
+<div class="row">
+    <input type="text" ng-model="app.person.name"/>
+    <input type="text" ng-model="app.person.age"/>
+    <a href="#" class="button" ng-click="app.addPerson(app.person)">Add Person</a>
+</div>
+
+<div class="row">
+    <ul>
+        <li ng-repeat="person in app.people">
+            {{person.name}} is {{person.age}} years old
+        </li>
+    </ul>
+</div>
+
+
+<script src="bower_components/angular/angular.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
