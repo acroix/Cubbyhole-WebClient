@@ -4,7 +4,7 @@ var http    = require('http');
 var app = express();
 app.use(express.bodyParser());
 app.set('port', 3000);
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/app'));
 
 var data = [
     { "name": "Dagny Taggart", "age": 39 },
@@ -19,6 +19,10 @@ app.get('/users', function(req, res) {
 app.post('/users', function(req, res) {
     data.push(req.body);
     res.send(data);
+});
+
+app.post('/upload', function(req, res) {
+   res.send(req.files);
 });
 
 http.createServer(app).listen(app.get('port'), function() {
