@@ -1,5 +1,6 @@
 var express = require('express');
 var http    = require('http');
+var fs      = require('fs');
 
 var app = express();
 app.use(express.bodyParser());
@@ -22,7 +23,17 @@ app.post('/users', function(req, res) {
 });
 
 app.post('/upload', function(req, res) {
-   res.send(req.files);
+
+    fs.readFile(req.files.file.path, function(err, data) {
+        var uploadPath = __dirname + '/uploads/' + req.files.file.name;
+
+        fs.writeFile(uploadPath, data, function(err) {
+            if (err) throw err;
+            res.redirect('back');
+        })
+
+    })
+
 });
 
 http.createServer(app).listen(app.get('port'), function() {
