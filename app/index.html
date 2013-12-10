@@ -21,12 +21,23 @@
 </div>
 
 <div class="row">
-    <h1>Upload a file</h1>
+    <h2>Upload a file</h2>
 
     <form action="/upload" method="post" enctype="multipart/form-data">
         <input type="file" name="file">
         <input type="submit" value="Submit">
     </form>
+</div>
+
+
+<div class="row">
+    <h2>Files uploaded</h2>
+    <ul>
+        <li ng-repeat="file in app.files">
+            {{file}}
+
+        </li>
+    </ul>
 </div>
 
 

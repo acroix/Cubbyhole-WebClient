@@ -22,6 +22,13 @@ app.post('/users', function(req, res) {
     res.send(data);
 });
 
+
+app.get('/filesUpload', function(req, res) {
+    fs.readdir('uploads', function(err, files) {
+        res.send(files);
+    })
+});
+
 app.post('/upload', function(req, res) {
 
     fs.readFile(req.files.file.path, function(err, data) {
