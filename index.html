@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CubbyHole Web Client</title>
+    <script src="/app/bower_components/angular/angular.js"></script>
+    <script data-main="/app/app.js" src="/app/require.js"></script>
+    <link rel="stylesheet" href="/app/bower_components/foundation/css/foundation.min.css"/>
+    <link rel="stylesheet" href="/app/bower_components/font-awesome/css/font-awesome.min.css"/>
+
+    <style type="text/css" media="screen">
+
+        .file {
+            cursor: pointer;
+        }
+
+        .file:click {
+            color: #F7819F;
+        }
+
+        .file:active {
+            color: #F7819F;
+        }
+
+        .fa-3 {
+            font-size: 4em;
+            text-align: center;
+        }
+
+
+        .fileText {
+            text-align: center;
+        }
+    </style>
+</head>
+<body ng-app="app" ng-controller="AppCtrl as app">
+<div class="row">
+    <ul class="inline-list">
+    <li class="file" ng-repeat="file in files">
+        <i class="fa fa-folder fa-3"></i>
+        <span class="fileText">{{file.name}}</span>
+    </li>
+    <li class="file">
+        <i class="fa fa-file-text fa-3"></i>
+        <span class="fileText">this is a file</span>
+    </li>
+</ul>
+</div>
+<script src="/app/bower_components/jquery/jquery.min.js"></script>
+<script src="/app/app.js"></script>
+</body>
+</html>
