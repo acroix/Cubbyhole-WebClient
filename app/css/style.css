@@ -1,0 +1,39 @@
+.file {
+    position: absolute;
+    width: auto;
+    height: auto;
+    background-color: #D1E3F7;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.file:active {
+    background-color: #81F48D;
+}
+
+.trash {
+    position: absolute;
+    top: 200px;
+    right: 200px;
+    background-color: #D1E3F7;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.fa-3 {
+    font-size: 4em;
+    text-align: center;
+}
+
+.fileText {
+    display: block;
+    text-align: center;
+}
+
+
+.test {
+    position: absolute;
+    top:10px;
+    right: 10px;
+}
