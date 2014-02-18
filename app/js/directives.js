@@ -1,13 +1,12 @@
-define(function() {
-    'use strict';
+define(['angular'], function (angular) {
 
     var fileElement = {
         dragging: false,
         element: ''
-    }
+    };
 
-    return {
-        draggable: function ($document) {
+    angular.module('myApp.directives', [])
+        .directive('draggable', function ($document) {
             return function (scope, element, attr) {
                 var startX  = 0;
                 var startY  = 0;
@@ -40,8 +39,8 @@ define(function() {
                     fileElement.dragging = false;
                 }
             }
-        },
-        droppable: function($document) {
+        })
+        .directive('droppable', function($document) {
             return function (scope, element, attr) {
                 // TODO add class better than .css
                 element.on('mouseleave', function() {
@@ -68,6 +67,6 @@ define(function() {
                         console.log("no element :(")
                 });
             }
-        }
-    }
+        });
 });
+

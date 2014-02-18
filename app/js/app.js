@@ -1,27 +1,12 @@
-require(['directives', 'factories'],
-    function(directives, factories) {
-        var app = angular.module("app", []);
+define(['angular', 'directives', 'factories'],
+    function(angular, directives, factories) {
 
-        app.directive(directives);
-        app.value('baseUrl', 'http://localhost:3000');
-        app.value('authBase64', 'Basic dXNlcjpwYXNz');
-        // TODO app.value('authBase64', 'Basic' + Base64(user:pass));
+        'use strict';
 
-        // TODO remove url from httpauth and put it into FileManager
-        app.factory(factories);
-
-        app.controller("AppCtrl", function($scope, fileManager) {
-            fileManager
-                .list()
-                .then(function(files) {
-                    $scope.files = files.data;
-                });
-
-            $scope.addFile = function() {
-                console.log("ok")
-                fileManager
-                    .add()
-            }
-        });
-
+        return angular.module('myApp', [
+            'myApp.services',
+            'myApp.factories',
+            'myApp.controllers',
+            'myApp.directives'
+        ]);
     });
