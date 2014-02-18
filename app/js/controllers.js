@@ -1,5 +1,5 @@
 define(['angular', 'fileManager'], function (angular, fileManager) {
-    angular.module('myApp.controllers', [])
+    return angular.module('myApp.controllers', [])
         .controller("AppCtrl", function($scope, fileManager) {
             fileManager
                 .list()

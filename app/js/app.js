@@ -1,12 +1,14 @@
-define(['angular', 'directives', 'factories'],
-    function(angular, directives, factories) {
+define([
+	'angular',
+	'services',
+	'directives',
+	'controllers',
+	], function (angular, services, directives, controllers) {
+		'use strict';
 
-        'use strict';
-
-        return angular.module('myApp', [
-            'myApp.services',
-            'myApp.factories',
-            'myApp.controllers',
-            'myApp.directives'
-        ]);
-    });
+		return angular.module('myApp', [
+			'myApp.controllers',
+			'myApp.services',
+			'myApp.directives'
+		]);
+});
