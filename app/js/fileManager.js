@@ -10,13 +10,16 @@ define(function() {
 
 	FileManager.prototype.add = function() {
 		return this.http({
-				url: this.baseUrl + '/files', 
-				method: 'PUT', 
-				form: {
-					name: 'file2',
-					parent: 0
-				}
-			});
+            url: this.baseUrl + '/files',
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: {
+                name: 'file2',
+                parent: 0
+            }
+        });
 	}
 
 	FileManager.prototype.remove = function(id) {

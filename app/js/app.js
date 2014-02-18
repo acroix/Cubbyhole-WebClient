@@ -1,12 +1,11 @@
-require(['directives', 'factories'], 
+require(['directives', 'factories'],
     function(directives, factories) {
         var app = angular.module("app", []);
 
         app.directive(directives);
         app.value('baseUrl', 'http://localhost:3000');
         app.value('authBase64', 'Basic dXNlcjpwYXNz');
-        // WILL BE
-        // app.value('authBase64', 'Basic' + Base64(user:pass));
+        // TODO app.value('authBase64', 'Basic' + Base64(user:pass));
 
         // TODO remove url from httpauth and put it into FileManager
         app.factory(factories);
