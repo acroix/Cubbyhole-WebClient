@@ -1,4 +1,4 @@
-define(['angular', 'fileManager'], function(angular, FileManager) {
+define(['angular'], function(angular) {
 
     angular.module('myApp.factories', ['myApp.services'])
         .factory('httpAuth', function($http, authBase64) {
@@ -12,8 +12,4 @@ define(['angular', 'fileManager'], function(angular, FileManager) {
                 return $http(config);
             }
         })
-        .factory('fileManager', function(baseUrl, httpAuth) {
-            var fileManager = new FileManager(baseUrl, httpAuth);
-            return fileManager;
-        });
 });
