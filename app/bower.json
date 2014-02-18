@@ -14,7 +14,9 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "~1.2.3",
-    "foundation": "~5.0.2"
+    "jquery-ui": "*",
+    "font-awesome": "~4.0.3",
+    "requirejs": "~2.1.11",
+    "js-base64": "~2.1.2"
   }
 }
