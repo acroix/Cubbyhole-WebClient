@@ -1,5 +1,5 @@
 
-var app = angular.module('app', []);
+var app = angular.module('app', ['angularFileUpload']);
 
 ///////////////////////
 // FileManager class //
@@ -129,6 +129,9 @@ app.factory('fileManager', function(baseUrl, httpAuth) {
 	return fileManager;
  });
 
+/////////////////
+// Controllers //
+/////////////////
 app.controller("AppCtrl", function($scope, fileManager) {
     console.log(fileManager)
     fileManager
@@ -141,3 +144,37 @@ app.controller("AppCtrl", function($scope, fileManager) {
     //     console.log("add file")
     // }
 });
+
+var UploadCtrl = [ '$scope', '$upload','baseUrl', 'authBase64', 
+    function($scope, $upload, baseUrl, authBase64) {
+        $scope.onFileSelect = function($files) {
+            //$files: an array of files selected, each file has name, size, and type.
+            for (var i = 0; i < $files.length; i++) {
+                var file = $files[i];
+                $scope.upload = $upload.upload({
+                    url: baseUrl + '/files',
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': authBase64
+                    },
+                    // withCredentials: true,
+                    data: {name: $scope.myModelObj, parent: 0},
+                    file: file,
+                    // file: $files, //upload multiple files, this feature only works in HTML5 FromData browsers
+                    /* set file formData name for 'Content-Desposition' header. Default: 'file' */
+                    //fileFormDataName: myFile, //OR for HTML5 multiple upload only a list: ['name1', 'name2', ...]
+                    /* customize how data is added to formData. See #40#issuecomment-28612000 for example */
+                    //formDataAppender: function(formData, key, val){} //#40#issuecomment-28612000
+                }).progress(function(evt) {
+                    console.log('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+                }).success(function(data, status, headers, config) {
+                    // file is uploaded successfully
+                    console.log(data);
+                });
+                //.error(...)
+                //.then(success, error, progress); 
+            }
+        }
+    }];
+

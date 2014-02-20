@@ -18,6 +18,7 @@
     "font-awesome": "~4.0.3",
     "jquery": "~2.1.0",
     "js-base64": "~2.1.2",
-    "requirejs": "~2.1.11"
+    "ng-file-upload": "~1.2.8",
+    "foundation" : "~5.1.1"
   }
 }
