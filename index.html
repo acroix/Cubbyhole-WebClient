@@ -6,10 +6,10 @@
     <link rel="stylesheet" href="/app/bower_components/font-awesome/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="/app/css/style.css">
 </head>
-<body ng-app="myApp" ng-controller="AppCtrl as myApp">
+<body ng-app="app" ng-controller="AppCtrl as app">
 
     <div class="file" ng-repeat="file in files" draggable>
-        <i class="fa fa-file-o fa-3"></i>
+        <i class="fa fa-file fa-3"></i>
         <span class="fileText">{{file.name}}</span>
     </div>
 
@@ -17,7 +17,10 @@
         <i class="fa fa-trash-o fa-3"></i>
     </div>
 
-    <a class="test" href="#" ng-click="addFile()">Add file</a>
-    <script data-main="/app/js/main.js" src="/app/bower_components/requirejs/require.js"></script>
+<!--     <a class="test" href="#" ng-click="addFile()">Add file</a>
+ -->
+    <script src="/app/bower_components/angular/angular.js"></script>
+    <script src="/app/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/app/js/app.js"></script>
 </body>
 </html>
