@@ -149,14 +149,13 @@ app.factory('fileManager', function(baseUrl, httpAuth) {
 /////////////
 // Routing //
 /////////////
-app.config(function ($routeProvider) {
-    $routeProvider
-        .when('/',
-        {
-            templateUrl: 'app.html',
-            controller: 'AppCtrl'
-        })
-})
+// app.config(function ($routeProvider) {
+//     $routeProvider
+//         .when('/', {
+//             templateUrl: 'app.html',
+//             controller: 'AppCtrl'
+//         })
+// })
 
 
 /////////////////
