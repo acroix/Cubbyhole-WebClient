@@ -10,42 +10,8 @@
 <body ng-app="app" ng-controller="AppCtrl as app">
 
     <div class="row">
-        <div id="fileUpload" class="large-3 medium-4 columns">
-            <h2>Upload a file</h2>
-            <div ng-controller="UploadCtrl">
-            <input type="text" ng-model="myModelObj" placeholder="custom filename">
-            <input type="file" ng-file-select="onFileSelect($files)" >
-            <!-- <input type="file" ng-file-select="onFileSelect($files)" multiple> -->
-            <div ng-file-drop="onFileSelect($files)" class="cubbybox" ng-file-drag-over-class="cubbyboxdo"
-                ng-show="dropSupported">drop files here</div>
-            <div ng-file-drop-available="dropSupported=true" 
-                ng-show="!dropSupported">HTML5 Drop File is not supported!</div>
-            <button class="label radius round right" ng-click="upload.abort()">Cancel Upload</button>
-            </div>
-        </div>
-
-        <div id="fileManager" class="large-9 medium-8 columns">
-
-            <!-- <div class="fileManagerTools">
-                <a href="#" ng-click="addFile()">New file</a>
-                <a href="#">New folder</a>
-                <a href="#">Delete file</a>
-                <a href="#">Delete folder</a>
-                <a href="#">Share</a>
-            </div> -->
-
-            <div class="fileContent">
-                <div data-id="{{file.id}}" class="file" ng-repeat="file in files" draggable>
-                    <i class="fa fa-file-o fa-3"></i>
-                    <span class="fileText">{{file.name}}</span>
-                </div>
-
-                <div class="trash" droppable>
-                    <i class="fa fa-trash-o fa-3"></i>
-                </div>
-            </div>
-        
-        </div>
+        <div ui-view="sidebar" class="large-3 medium-4 columns"></div>
+        <div ui-view="content" class="large-9 medium-8 columns"></div>
     </div>
 
 <!--     <a class="test" href="#" ng-click="addFile()">Add file</a>
@@ -54,6 +20,7 @@
     <script src="/app/bower_components/angular/angular.js"></script>
     <script src="/app/bower_components/ng-file-upload/angular-file-upload.min.js"></script>
     <script src="/app/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/app/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="/app/js/app.js"></script>
 </body>
 </html>

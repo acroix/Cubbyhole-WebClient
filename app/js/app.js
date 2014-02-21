@@ -1,5 +1,5 @@
 
-var app = angular.module('app', ['angularFileUpload']);
+var app = angular.module('app', ['angularFileUpload', 'ui.router']);
 
 ///////////////////////
 // FileManager class //
@@ -149,13 +149,22 @@ app.factory('fileManager', function(baseUrl, httpAuth) {
 /////////////
 // Routing //
 /////////////
-// app.config(function ($routeProvider) {
-//     $routeProvider
-//         .when('/', {
-//             templateUrl: 'app.html',
-//             controller: 'AppCtrl'
-//         })
-// })
+app.config(function ($stateProvider, $urlRouterProvider) {
+    $stateProvider
+        .state('app', {
+            url: '/',
+            views: {
+                'content': {
+                    templateUrl: 'app/templates/content.html'
+                },
+                'sidebar': {
+                    templateUrl: 'app/templates/sidebar.tpl.html'
+                }
+            }
+        })
+
+    $urlRouterProvider.otherwise('/');
+})
 
 
 /////////////////
