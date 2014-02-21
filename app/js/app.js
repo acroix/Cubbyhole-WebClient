@@ -24,9 +24,23 @@ FileManager.prototype.add = function() {
             'Content-Type': 'application/json'
         },
         data: {
-            name: 'file2',
+            name: 'title?',
             parent: 0
         }
+    });
+}
+
+FileManager.prototype.getFileById = function(id) {
+    return this.http({
+        url: this.baseUrl + '/files/' + id,
+        method: 'GET',
+    });
+}
+
+FileManager.prototype.delete = function(id) {
+    return this.http({
+        url: this.baseUrl + '/files/' + id,
+        method: 'DELETE'
     });
 }
 
@@ -54,6 +68,7 @@ app.directive('draggable', function ($document) {
             $document.on('mouseup', mouseUp);
             fileElement.element = this;
             fileElement.dragging = true;
+            fileElement.id = element.attr("data-id");
         });
 
         function mouseMove ( event ) {
@@ -90,8 +105,9 @@ app.directive('droppable', function($document) {
                 });
 
                 element.on('mouseup', function() {
-                    fileElement.element.remove();
-
+                    scope.deleteFile(fileElement.id)
+                    fileElement.element.remove()
+                        
                     element.css({
                         backgroundColor: '#D1E3F7'
                     });
@@ -129,21 +145,45 @@ app.factory('fileManager', function(baseUrl, httpAuth) {
 	return fileManager;
  });
 
+
+/////////////
+// Routing //
+/////////////
+app.config(function ($routeProvider) {
+    $routeProvider
+        .when('/',
+        {
+            templateUrl: 'app.html',
+            controller: 'AppCtrl'
+        })
+})
+
+
 /////////////////
 // Controllers //
 /////////////////
 app.controller("AppCtrl", function($scope, fileManager) {
-    console.log(fileManager)
+    var app = this;
+
     fileManager
         .list()
         .then(function(files) {
             $scope.files = files.data;
         });
 
-    // $scope.addFile = function() {
-    //     console.log("add file")
-    // }
+    $scope.addFile = function() {
+        fileManager
+            .add()
+            .then(function(file) {
+                $scope.files.push(file);
+            });
+    }
+
+    $scope.deleteFile = function(fileId) {
+        fileManager.delete(fileId)
+    }
 });
+
 
 var UploadCtrl = [ '$scope', '$upload','baseUrl', 'authBase64', 
     function($scope, $upload, baseUrl, authBase64) {
@@ -151,6 +191,7 @@ var UploadCtrl = [ '$scope', '$upload','baseUrl', 'authBase64',
             //$files: an array of files selected, each file has name, size, and type.
             for (var i = 0; i < $files.length; i++) {
                 var file = $files[i];
+
                 $scope.upload = $upload.upload({
                     url: baseUrl + '/files',
                     method: 'PUT',
@@ -159,7 +200,7 @@ var UploadCtrl = [ '$scope', '$upload','baseUrl', 'authBase64',
                         'Authorization': authBase64
                     },
                     // withCredentials: true,
-                    data: {name: $scope.myModelObj, parent: 0},
+                    data: {name: $scope.myModelObj || file.name , parent: 0},
                     file: file,
                     // file: $files, //upload multiple files, this feature only works in HTML5 FromData browsers
                     /* set file formData name for 'Content-Desposition' header. Default: 'file' */
@@ -171,6 +212,7 @@ var UploadCtrl = [ '$scope', '$upload','baseUrl', 'authBase64',
                 }).success(function(data, status, headers, config) {
                     // file is uploaded successfully
                     console.log(data);
+                    $scope.files.push(data);
                 });
                 //.error(...)
                 //.then(success, error, progress); 

@@ -11,6 +11,16 @@
 
 }
 
+.fileManagerTools {
+    background: #fafafa;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
+.fileManagerTools a {
+    margin-right: 15px;
+}
+
 .file {
     position: absolute;
     width: auto;

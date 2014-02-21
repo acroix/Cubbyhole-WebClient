@@ -25,14 +25,26 @@
         </div>
 
         <div id="fileManager" class="large-9 medium-8 columns">
-            <div class="file" ng-repeat="file in files" draggable>
-                <i class="fa fa-file-o fa-3"></i>
-                <span class="fileText">{{file.name}}</span>
-            </div>
 
-            <div class="trash" droppable>
-                <i class="fa fa-trash-o fa-3"></i>
+            <!-- <div class="fileManagerTools">
+                <a href="#" ng-click="addFile()">New file</a>
+                <a href="#">New folder</a>
+                <a href="#">Delete file</a>
+                <a href="#">Delete folder</a>
+                <a href="#">Share</a>
+            </div> -->
+
+            <div class="fileContent">
+                <div data-id="{{file.id}}" class="file" ng-repeat="file in files" draggable>
+                    <i class="fa fa-file-o fa-3"></i>
+                    <span class="fileText">{{file.name}}</span>
+                </div>
+
+                <div class="trash" droppable>
+                    <i class="fa fa-trash-o fa-3"></i>
+                </div>
             </div>
+        
         </div>
     </div>
 
