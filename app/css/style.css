@@ -1,5 +1,36 @@
+#browserLocation {
+
+}
+
+#browserTooltips {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#browserTooltips span {
+    padding-right: 15px;
+}
+
+#browserTooltips .toolText {
+    font-size: 0.9em;
+    vertical-align: text-top;
+}
+
+#browserTooltips span:hover {
+    color: #039CCA;
+}
+
+#browserTooltips i {
+    font-size: 1.4em;
+    color: #1399bd;
+}
+
 .row {
     max-width: 80em;
+}
+
+.clear {
+    clear: both;
 }
 
 #fileUpload {
@@ -7,8 +38,10 @@
     padding: 32px 20px;
 }
 
-#fileManager {
-
+#fileManager img {
+    width: 30px;
+    height: 30px;
+    margin-right: 8px;
 }
 
 .fileManagerTools {
@@ -27,7 +60,6 @@
     height: auto;
     background-color: #D1E3F7;
     padding: 10px;
-    border-radius: 10px;
     cursor: pointer;
 }
 
@@ -35,15 +67,14 @@
     background-color: #81F48D;
 }
 
-.trash {
-    position: absolute;
-    top: 200px;
-    right: 200px;
-    background-color: #D1E3F7;
-    padding: 10px;
-    border-radius: 10px;
+.fileSelected {
+    background-color: rgba(201, 231, 237, .6);
 }
 
+.trash {
+    width: 100px;
+    height: 100px;
+}
 .fa-3 {
     font-size: 4em;
     text-align: center;
@@ -72,4 +103,26 @@
 
 .cubbyboxdo {
     border: 5px dashed red;
+}
+
+#fileBrowser li {
+    margin: 0 0px -1px 0px;
+    list-style: none;
+}
+
+#fileBrowser .fileBrowserHeader {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#fileBrowser .browsefile {
+    border: 1px solid #e5e5e5;
+}
+
+#fileBrowser .filename {
+    width: 53%;
+}
+
+#fileBrowser .filetype {
+    width: 23%;
 }

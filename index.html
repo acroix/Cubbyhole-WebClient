@@ -5,21 +5,22 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <link rel="stylesheet" href="/app/bower_components/font-awesome/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="/app/bower_components/foundation/css/foundation.min.css">
+    <link rel="stylesheet" href="/app/css/foundation-icons.css">
     <link rel="stylesheet" href="/app/css/style.css">
 </head>
 <body ng-app="app" ng-controller="AppCtrl as app">
 
     <div class="row">
         <div ui-view="sidebar" class="large-3 medium-4 columns"></div>
+        <div ui-view="browseHeader"></div>
         <div ui-view="content" class="large-9 medium-8 columns"></div>
     </div>
 
-<!--     <a class="test" href="#" ng-click="addFile()">Add file</a>
- -->
     <script src="/app/bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script>
     <script src="/app/bower_components/angular/angular.js"></script>
     <script src="/app/bower_components/ng-file-upload/angular-file-upload.min.js"></script>
     <script src="/app/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/app/bower_components/foundation/js/foundation.min.js"></script>
     <script src="/app/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="/app/js/app.js"></script>
 </body>

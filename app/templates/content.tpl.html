@@ -1,0 +1,30 @@
+
+
+<div id="fileManager">
+    <ul id="fileBrowser">
+        <li class="fileBrowserHeader">
+            <div class="left filename">Name</div>
+            <div class="left filetype">Type</div>
+            <div class="left filechange">Last change</div>
+            <br class="clear">
+        </li>
+        <li class="browsefile" data-id="{{file.id}}" ng-repeat="file in files" ng-class="{ 'fileSelected': $index == selectedIndex }" ng-click="fileSelected($index, file)" draggable>
+            <div class="left filename">
+                <img ng-if="!file.isFolder" src="/app/assets/document.png">
+                <img ng-if="file.isFolder" src="/app/assets/folder.png">
+                {{file.name}}
+            </div>
+            <div class="left filetype">{{file.isFolder}}</div>
+            <div class="left filechange">{{file.cdate}}</div>
+            <br class="clear">
+        </li>
+    </ul>
+
+   <!--  <div class="trash" droppable>
+        <i class="fa fa-trash-o fa-3"></i>
+    </div> -->
+</div>
+
+<div class="right trash" droppable>
+    <img src="/app/assets/bin-empty.png">
+</div>

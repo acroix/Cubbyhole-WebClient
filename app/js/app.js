@@ -16,7 +16,12 @@ FileManager.prototype.list = function() {
     });
 }
 
-FileManager.prototype.add = function() {
+FileManager.prototype.add = function(isFolder) {
+
+    if (isFolder === undefined) {
+        var isFolder = false;
+    }
+
 	return this.http({
         url: this.baseUrl + '/files',
         method: 'PUT',
@@ -25,7 +30,8 @@ FileManager.prototype.add = function() {
         },
         data: {
             name: 'title?',
-            parent: 0
+            parent: 0,
+            isFolder: isFolder
         }
     });
 }
@@ -92,25 +98,11 @@ app.directive('draggable', function ($document) {
 app.directive('droppable', function($document) {
     return function (scope, element, attr) {
         // TODO add class better than .css
-        element.on('mouseleave', function() {
-            element.css({
-                backgroundColor: '#D1E3F7'
-            });
-        });
-
         element.on('mouseenter', function () {
             if (fileElement.dragging) {
-                element.css({
-                    backgroundColor: 'red'
-                });
-
                 element.on('mouseup', function() {
-                    scope.deleteFile(fileElement.id)
-                    fileElement.element.remove()
-                        
-                    element.css({
-                        backgroundColor: '#D1E3F7'
-                    });
+                    scope.deleteFile(fileElement.id);
+                    fileElement.element.remove();
                 });
             }
             if (!fileElement.dragging)
@@ -155,10 +147,13 @@ app.config(function ($stateProvider, $urlRouterProvider) {
             url: '/',
             views: {
                 'content': {
-                    templateUrl: 'app/templates/content.html'
+                    templateUrl: 'app/templates/content.tpl.html'
                 },
                 'sidebar': {
                     templateUrl: 'app/templates/sidebar.tpl.html'
+                },
+                'browseHeader': {
+                    templateUrl: 'app/templates/browseheader.tpl.html'
                 }
             }
         })
@@ -172,6 +167,7 @@ app.config(function ($stateProvider, $urlRouterProvider) {
 /////////////////
 app.controller("AppCtrl", function($scope, fileManager) {
     var app = this;
+    var currentFile = {};
 
     fileManager
         .list()
@@ -179,16 +175,34 @@ app.controller("AppCtrl", function($scope, fileManager) {
             $scope.files = files.data;
         });
 
+    $scope.addFolder = function() {
+        var isFolder = true;
+
+        fileManager
+            .add(isFolder)
+            .then(function(file) {
+                console.log(file)
+                $scope.files.push(file.data)
+            })
+    }
+
     $scope.addFile = function() {
         fileManager
             .add()
             .then(function(file) {
-                $scope.files.push(file);
+                $scope.files.push(file.data);
             });
     }
 
     $scope.deleteFile = function(fileId) {
         fileManager.delete(fileId)
+    }
+
+    $scope.fileSelected = function($index, file) {
+        $scope.selectedIndex = $index;
+        if (currentFile.id !== file.id) {
+            currentFile = file;
+        }
     }
 });
 
