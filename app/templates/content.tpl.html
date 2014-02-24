@@ -14,7 +14,8 @@
                 <img ng-if="file.isFolder" src="/app/assets/folder.png">
                 {{file.name}}
             </div>
-            <div class="left filetype">{{file.isFolder}}</div>
+            <div ng-if="!file.isFolder" class="left filetype">file</div>
+            <div ng-if="file.isFolder" class="left filetype">folder</div>
             <div class="left filechange">{{file.cdate}}</div>
             <br class="clear">
         </li>

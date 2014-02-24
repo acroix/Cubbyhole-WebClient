@@ -34,8 +34,17 @@
 }
 
 #fileUpload {
-    background: #fafafa;
-    padding: 32px 20px;
+    background-color: #fff;
+    border: 1px solid #dadada;
+    color: #333;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    -webkit-box-shadow: 3px 3px 3px rgba(0,0,0,0.1);
+    -moz-box-shadow: 3px 3px 3px rgba(0,0,0,0.1);
+    box-shadow: 3px 3px 3px rgba(0,0,0,0.1);
+    padding: 20px 45px 30px 45px;
+    margin: 20px -26px 40px -26px;
 }
 
 #fileManager img {
@@ -93,12 +102,14 @@
 }
 
 .cubbybox {
-    background: #F8F8F8;
-    border: 5px dashed #DDD;
-    height: 65px;
-    text-align: center;
-    padding-top: 20px;
-    margin-bottom: 10px;
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+    border-width: 4px;
+    border-style: dashed;
+    border-color: #b7b7b7;
+    border-radius: 15px;
+    padding:20px;
+    margin-bottom: 15px;
 }
 
 .cubbyboxdo {
