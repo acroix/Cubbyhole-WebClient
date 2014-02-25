@@ -10,6 +10,28 @@
 </head>
 <body ng-app="app" ng-controller="AppCtrl as app">
 
+    <nav class="top-bar" data-topbar>
+      <ul class="title-area">
+        <li class="name">
+          <h1><a href="#">Cubbyhole</a></h1>
+        </li>
+      </ul>
+
+      <section class="top-bar-section">
+        <ul class="right">
+          <li>
+            <a href="#">Username</a>
+          </li>
+          <li>
+            <a href="#">
+                <i class="fi-wrench"></i>
+                <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </section>
+    </nav>
+    
     <div class="row">
         <div ui-view="sidebar" class="large-3 medium-4 columns"></div>
         <div ui-view="browseHeader"></div>
