@@ -7,19 +7,18 @@
     cursor: pointer;
 }
 
-#browserTooltips span {
-    padding-right: 15px;
-}
-
 #browserTooltips .toolText {
     font-size: 0.9em;
     vertical-align: text-top;
 }
 
 #browserTooltips span:hover {
-    color: #039CCA;
+    cursor: pointer;
 }
 
+#browserTooltips li {
+    display: inline-block;
+}
 #browserTooltips i {
     font-size: 1.4em;
     color: #1399bd;

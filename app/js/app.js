@@ -1,56 +1,6 @@
 
 var app = angular.module('app', ['angularFileUpload', 'ui.router']);
 
-///////////////////////
-// FileManager class //
-///////////////////////
-var FileManager = function(baseUrl, http) {
-	this.http = http;
-    this.baseUrl = baseUrl;
-}
-
-FileManager.prototype.list = function() {
-    return this.http({
-    	url: this.baseUrl + '/files', 
-    	method: 'GET'
-    });
-}
-
-FileManager.prototype.add = function(isFolder) {
-
-    if (isFolder === undefined) {
-        var isFolder = false;
-    }
-
-	return this.http({
-        url: this.baseUrl + '/files',
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        data: {
-            name: 'title?',
-            parent: 0,
-            isFolder: isFolder
-        }
-    });
-}
-
-FileManager.prototype.getFileById = function(id) {
-    return this.http({
-        url: this.baseUrl + '/files/' + id,
-        method: 'GET',
-    });
-}
-
-FileManager.prototype.delete = function(id) {
-    return this.http({
-        url: this.baseUrl + '/files/' + id,
-        method: 'DELETE'
-    });
-}
-
-
 ////////////////
 // Directives //
 ////////////////
@@ -175,27 +125,25 @@ app.controller("AppCtrl", function($scope, fileManager) {
             $scope.files = files.data;
         });
 
-    $scope.addFolder = function() {
-        var isFolder = true;
+    $scope.addFile = function(isFolder) {
+        var isFolder = isFolder || false;
+        var fileName = $('#browserTooltips .fileName').val();
+        
+        if (!fileName.length)   fileName = 'no title'
 
         fileManager
-            .add(isFolder)
-            .then(function(file) {
-                console.log(file)
-                $scope.files.push(file.data)
-            })
-    }
-
-    $scope.addFile = function() {
-        fileManager
-            .add()
+            .add(isFolder, fileName)
             .then(function(file) {
                 $scope.files.push(file.data);
             });
     }
 
     $scope.deleteFile = function(fileId) {
-        fileManager.delete(fileId)
+        for (var i = 0; i < $scope.files.length; i++) {
+            if ($scope.files[i].id == fileId)
+                $scope.files.splice(i, 1);
+        }
+        fileManager.delete(fileId);
     }
 
     $scope.fileSelected = function($index, file) {
@@ -207,7 +155,7 @@ app.controller("AppCtrl", function($scope, fileManager) {
 });
 
 
-var UploadCtrl = [ '$scope', '$upload','baseUrl', 'authBase64', 
+var UploadCtrl = [ '$scope', '$upload','baseUrl', 'authBase64',
     function($scope, $upload, baseUrl, authBase64) {
         $scope.onFileSelect = function($files) {
             //$files: an array of files selected, each file has name, size, and type.
@@ -237,8 +185,7 @@ var UploadCtrl = [ '$scope', '$upload','baseUrl', 'authBase64',
                     $scope.files.push(data);
                 });
                 //.error(...)
-                //.then(success, error, progress); 
+                //.then(success, error, progress);
             }
         }
     }];
-
