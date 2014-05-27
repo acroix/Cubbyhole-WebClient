@@ -9,8 +9,8 @@
         </li>
         <li class="browsefile" data-id="{{file.id}}" ng-repeat="file in files" ng-class="{ 'fileSelected': $index == selectedIndex }" ng-click="fileSelected($index, file)" draggable>
             <div class="left filename">
-                <img ng-if="!file.isFolder" src="/app/assets/document.png">
-                <img ng-if="file.isFolder" src="/app/assets/folder.png">
+                <img ng-if="!file.isFolder" src="app/assets/document.png">
+                <img ng-if="file.isFolder" src="app/assets/folder.png">
                 {{file.name}}
             </div>
             <div ng-if="!file.isFolder" class="left filetype">file</div>
@@ -22,5 +22,5 @@
 </div>
 
 <div class="right trash" droppable>
-    <img src="/app/assets/bin-empty.png">
+    <img src="app/assets/bin-empty.png">
 </div>
