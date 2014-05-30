@@ -38,3 +38,4 @@ FileManager.prototype.delete = function(id) {
         method: 'DELETE'
     });
 }
+

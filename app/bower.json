@@ -19,7 +19,8 @@
     "jquery": "~2.1.0",
     "js-base64": "~2.1.2",
     "ng-file-upload": "~1.2.8",
-    "foundation" : "~5.1.1",
-    "angular-ui-router": "0.2.8-bowratic-tedium"
+    "foundation": "~5.1.1",
+    "angular-ui-router": "0.2.8-bowratic-tedium",
+    "reqwest": "~1.1.0"
   }
 }
