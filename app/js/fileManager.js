@@ -14,9 +14,6 @@ FileManager.prototype.add = function (isFolder, fileName) {
 	return this.http({
         url: this.baseUrl + '/files',
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
         data: {
             name: fileName,
             parent: 0,
@@ -36,6 +33,16 @@ FileManager.prototype.delete = function(id) {
     return this.http({
         url: this.baseUrl + '/files/' + id,
         method: 'DELETE'
+    });
+}
+
+FileManager.prototype.copy = function(file) {
+    return this.http({
+        url: this.baseUrl + '/files/' + file.id + '/copy',
+        method: 'POST',
+        data: {
+            name: file.name + '-copy'
+        }
     });
 }
 

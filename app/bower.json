@@ -21,6 +21,7 @@
     "ng-file-upload": "~1.2.8",
     "foundation": "~5.1.1",
     "angular-ui-router": "0.2.8-bowratic-tedium",
-    "reqwest": "~1.1.0"
+    "reqwest": "~1.1.0",
+    "eventEmitter": "~4.2.7"
   }
 }

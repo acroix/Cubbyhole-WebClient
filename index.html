@@ -1,50 +1,213 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <title>CubbyHole Web Client</title>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" href="/app/bower_components/font-awesome/css/font-awesome.min.css"/>
-    <link rel="stylesheet" href="/app/bower_components/foundation/css/foundation.min.css">
-    <link rel="stylesheet" href="/app/css/foundation-icons.css">
-    <link rel="stylesheet" href="/app/css/style.css">
-</head>
-<body ng-app="app" ng-controller="AppCtrl as app">
+    <head>
+        <meta charset="utf-8">
+        <title>Cubbyhole web client</title>
+        <link rel="stylesheet" href="/app/bower_components/foundation/css/foundation.min.css">
+    </head>
 
-    <nav class="top-bar" data-topbar>
-      <ul class="title-area">
-        <li class="name">
-          <h1><a href="#">Cubbyhole</a></h1>
-        </li>
-      </ul>
+    <body>
+    	<div id="main"></div>
 
-      <section class="top-bar-section">
-        <ul class="right">
-          <li>
-            <a href="#">Username</a>
-          </li>
-          <li>
-            <a href="#">
-                <i class="fi-wrench"></i>
-                <span>Settings</span>
-            </a>
-          </li>
-        </ul>
-      </section>
-    </nav>
-    
-    <div class="row">
-        <div ui-view="sidebar" class="large-3 medium-4 columns"></div>
-        <div ui-view="browseHeader"></div>
-        <div ui-view="content" class="large-9 medium-8 columns"></div>
-    </div>
+        <script src="http://fb.me/react-0.9.0.js"></script>
+	    <script src="http://fb.me/JSXTransformer-0.9.0.js"></script>
 
-    <script src="/app/bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script>
-    <script src="/app/bower_components/angular/angular.js"></script>
-    <script src="/app/bower_components/ng-file-upload/angular-file-upload.min.js"></script>
-    <script src="/app/bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="/app/bower_components/foundation/js/foundation.min.js"></script>
-    <script src="/app/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <script src="/app/js/fileManager.js"></script>
-    <script src="/app/js/app.js"></script>
-</body>
+	    <script src="/app/bower_components/reqwest/reqwest.min.js"></script>
+		<script src="/app/bower_components/eventEmitter/EventEmitter.min.js"></script>
+
+		<script src="/app/js/fileManager.js"></script>
+		<script>
+			var view = null;
+			var req = (function($http, authBase64) {
+			    return function(config) {
+			        if (typeof config !== 'object')
+			            config = {}
+
+			        config.headers = config.headers || {};
+			        config.headers.Authorization = authBase64;
+			        config.type = 'json';
+			        res = $http(config);
+			        res.catch = res.fail;
+			        return res;
+			    }
+			})(reqwest, 'Basic dXNlcjpwYXNz');
+
+			var store = {}
+			store.files = []
+
+			var fileManager = new FileManager('http://localhost:3000', req);
+			fileManager.list()
+				.then(function (files) {
+					return files.map(function (file) {
+						file.cdate = new Date(file.cdate);
+						return file;
+					})
+				})
+				.then(function (files) {
+					store.files = files;
+					view.forceUpdate();
+				})
+
+
+
+			var dispatcher = new EventEmitter();
+
+			dispatcher.on('ch.file.create', function (opts) {
+				console.log('DISPATCHER :', opts)
+				if (opts.isFolder) {
+					fileManager.add(opts.isFolder, opts.name)
+						.then(function (file) {
+							console.log("file has been added", file);
+							file.cdate = new Date(file.cdate);
+							store.files.push(file);
+							view.forceUpdate();
+						})
+						.catch(function (error) {
+							console.error(error);
+						})
+				}
+			})
+
+			dispatcher.on('ch.file.delete', function (opts) {
+				console.log('DISPATCHER :', opts)
+				fileManager.delete(opts.file.id)
+					.then(function (response) {
+						store.files.splice(store.files.indexOf(opts.file), 1);
+						view.forceUpdate();
+					})
+					.catch(function (error) {
+						console.error(error);
+					})
+			})
+
+
+			dispatcher.on('ch.file.copy', function (opts) {
+				console.log('DISPATCHER :', opts)
+				fileManager.copy(opts.file)
+					.then(function (file) {
+						file.cdate = new Date(file.cdate);
+						store.files.push(file)
+						view.forceUpdate();
+					})
+					.catch(function (error) {
+						console.error(error);
+					})
+			})
+
+			function startAction(name, args) {
+		    	return function () {
+		    		console.log('CALL TO ACTION :', name)
+		    		dispatcher.trigger(name, args);
+		    	}
+		    }
+
+		</script>
+
+	    <script type="text/jsx">
+	    /*** @jsx React.DOM */
+	    var APP = React.createClass({
+	        render: function () {
+	            return <MainLayout store={this.props.store} />
+	        }
+	    });
+
+	    var MainLayout = React.createClass({
+	    	render: function () {
+	    		return <div className="mainLayout">
+	    			<NavBar />
+	    			<div className="row">
+	    				<div className="large-3 medium-4 columns">
+	    					<SideBar />
+	    				</div>
+	    				<div className="large-9 medium-8 columns">
+	    					<Content store={this.props.store} />
+	    				</div>
+	    			</div>
+	    		</div>
+	    	}
+	    });
+
+	    var NavBar = React.createClass({
+	    	render: function () {
+	    		return <nav className="top-bar">
+			      <ul className="title-area">
+			        <li className="name">
+			          <h1><a href="#">Cubbyhole</a></h1>
+			        </li>
+			      </ul>
+
+			      <section className="top-bar-section">
+			        <ul className="right">
+			          <li>
+			            <a href="#">Username</a>
+			          </li>
+			          <li>
+			            <a href="#">
+			                <i className="fi-wrench"></i>
+			                <span>Settings</span>
+			            </a>
+			          </li>
+			          <li>
+			            <a href="#"><span className="alert round label">go pro !</span> Upgrade offer</a>
+			          </li>
+			        </ul>
+			      </section>
+			    </nav>
+	    	}
+	    });
+
+	    var SideBar = React.createClass({
+	    	render: function () {
+	    		return <div className="page-sidebar">
+	    			<h2>Actions</h2>
+	    			<input ref="folderName" type="text" placeholder="folder name" />
+	    			<button type="button"
+	    				onClick={this.handleClick}>
+	    				create folder
+	    			</button>
+				</div>
+	    	},
+	    	handleClick: function () {
+	    		console.log(this)
+	    		startAction("ch.file.create", [{isFolder:true, name:this.refs.folderName.getDOMNode().value}])();
+	    	}
+	    })
+
+	    var Content = React.createClass({
+	    	render: function () {
+	    		return <div className="page-content">
+	    			<FileViewer store={this.props.store} />
+	    		</div>
+	    	}
+	    })
+
+	    var FileViewer = React.createClass({
+	    	render: function () {
+	    		return <div>
+	    		<h2>Files</h2>
+	    			{
+	    				this.props.store.files.map(function (file) {
+	    					return <File file={file} />
+	    				})
+	    			}
+	    		</div>
+	    	}
+	    })
+
+	    var File = React.createClass({
+	    	render: function () {
+	    		return <div>
+	    			<span>{this.props.file.id}&nbsp;</span> 
+	    			<span>{this.props.file.name}&nbsp;</span> 
+	    			<span>{this.props.file.cdate.toLocaleString()}&nbsp;</span>
+	    			<span onClick={startAction("ch.file.delete", [{file:this.props.file}])}>delete&nbsp;</span>
+	    			<span onClick={startAction("ch.file.copy", [{file:this.props.file}])}>copy&nbsp;</span>
+	    		</div>
+	    	}
+	    })
+
+	    view = React.renderComponent(<APP store={store}/>, document.getElementById('main'));
+	    </script>
+        <script src="/app/js/app.js"></script>
+    </body>
 </html>
