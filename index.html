@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <title>Cubbyhole web client</title>
         <link rel="stylesheet" href="/app/bower_components/foundation/css/foundation.min.css">
+        <link rel="stylesheet" href="/app/css/style.css">
     </head>
 
     <body>
@@ -34,65 +35,78 @@
 
 			var store = {}
 			store.files = []
+			store.currentFile = null;
 
-			var fileManager = new FileManager('http://localhost:3000', req);
-			fileManager.list()
-				.then(function (files) {
-					return files.map(function (file) {
-						file.cdate = new Date(file.cdate);
-						return file;
-					})
-				})
-				.then(function (files) {
-					store.files = files;
-					view.forceUpdate();
-				})
+			var fileManager = new FileManager('http://37.187.46.33/api/v1/', req);
 
+			fileManager.list().then(function (files) {
+				return files.map(function (file) {
+					file.cdate = new Date(file.cdate);
+					return file;
+				})
+			}).then(function (files) {
+				store.files = files;
+				view.forceUpdate();
+			})
 
 
 			var dispatcher = new EventEmitter();
 
 			dispatcher.on('ch.file.create', function (opts) {
-				console.log('DISPATCHER :', opts)
 				if (opts.isFolder) {
-					fileManager.add(opts.isFolder, opts.name)
-						.then(function (file) {
-							console.log("file has been added", file);
-							file.cdate = new Date(file.cdate);
-							store.files.push(file);
-							view.forceUpdate();
-						})
-						.catch(function (error) {
-							console.error(error);
-						})
+					fileManager.add(
+						opts.isFolder, 
+						opts.name, store.currentFile ? store.currentFile.id : 0
+					).then(function (file) {
+						store.files.push(file);
+						view.forceUpdate();
+					}).catch(function (error) {
+						console.error(error);
+					})
 				}
 			})
 
-			dispatcher.on('ch.file.delete', function (opts) {
-				console.log('DISPATCHER :', opts)
-				fileManager.delete(opts.file.id)
-					.then(function (response) {
-						store.files.splice(store.files.indexOf(opts.file), 1);
-						view.forceUpdate();
-					})
-					.catch(function (error) {
-						console.error(error);
-					})
+			dispatcher.on('ch.file.delete', function (file) {
+				fileManager.delete(file.id).then(function (response) {
+					store.files.splice(store.files.indexOf(file), 1);
+					view.forceUpdate();
+				}).catch(function (error) {
+					console.error(error);
+				})
 			})
 
-
-			dispatcher.on('ch.file.copy', function (opts) {
-				console.log('DISPATCHER :', opts)
-				fileManager.copy(opts.file)
-					.then(function (file) {
-						file.cdate = new Date(file.cdate);
-						store.files.push(file)
-						view.forceUpdate();
-					})
-					.catch(function (error) {
-						console.error(error);
-					})
+			dispatcher.on('ch.file.copy', function (file) {
+				fileManager.copy(file).then(function (file) {
+					store.files.push(file)
+					view.forceUpdate();
+				}).catch(function (error) {
+					console.error(error);
+				})
 			})
+
+			dispatcher.on('ch.file.openFolder', function (file) {
+				fileManager.list(file.id).then(function (files) {
+					store.currentFile = file;
+					store.files = files;
+					view.forceUpdate();
+				}).catch(function (error) {
+					console.error(error);
+				})
+			})
+
+			dispatcher.on('ch.file.openParent', function (currentFile) {
+				if (store.currentFile) {
+					fileManager.getFileById(store.currentFile.parent).then(function (file) {
+						store.currentFile = file;
+
+						fileManager.list(store.currentFile.id).then(function (files) {
+							console.log(files)
+							store.files = files;
+							view.forceUpdate()
+						});
+					})
+				}
+			})	
 
 			function startAction(name, args) {
 		    	return function () {
@@ -168,10 +182,9 @@
 				</div>
 	    	},
 	    	handleClick: function () {
-	    		console.log(this)
 	    		startAction("ch.file.create", [{isFolder:true, name:this.refs.folderName.getDOMNode().value}])();
 	    	}
-	    })
+	    });
 
 	    var Content = React.createClass({
 	    	render: function () {
@@ -179,32 +192,48 @@
 	    			<FileViewer store={this.props.store} />
 	    		</div>
 	    	}
-	    })
+	    });
 
 	    var FileViewer = React.createClass({
 	    	render: function () {
 	    		return <div>
 	    		<h2>Files</h2>
 	    			{
+						this.props.store.currentFile && (this.props.store.currentFile.parent !== 0) ? 
+	    				<button onClick={this.getParent}>
+	    					parent folder
+	    				</button> : null
+	    			}
+
+	    			{
 	    				this.props.store.files.map(function (file) {
 	    					return <File file={file} />
 	    				})
 	    			}
 	    		</div>
+	    	},
+	    	getParent: function () {
+	    		startAction('ch.file.openParent')();
 	    	}
-	    })
+	    });
 
 	    var File = React.createClass({
 	    	render: function () {
 	    		return <div>
-	    			<span>{this.props.file.id}&nbsp;</span> 
-	    			<span>{this.props.file.name}&nbsp;</span> 
-	    			<span>{this.props.file.cdate.toLocaleString()}&nbsp;</span>
-	    			<span onClick={startAction("ch.file.delete", [{file:this.props.file}])}>delete&nbsp;</span>
-	    			<span onClick={startAction("ch.file.copy", [{file:this.props.file}])}>copy&nbsp;</span>
+	    			<span className="fileInfos" onDoubleClick={this.props.file.isFolder ? this.openFolder : null}>
+	    				<img className="fileImage" src={this.props.file.isFolder ? "/app/assets/folder.png" : "/app/assets/file.png"} />
+	    				<span>{this.props.file.id}&nbsp;</span> 
+	    				<span>{this.props.file.name}&nbsp;</span> 
+	    				<span>{this.props.file.cdate.toLocaleString()}&nbsp;</span>
+	    			</span>
+	    			<span onClick={startAction("ch.file.delete", [this.props.file])}>delete&nbsp;</span>
+	    			<span onClick={startAction("ch.file.copy", [this.props.file])}>copy&nbsp;</span>
 	    		</div>
+	    	},
+	    	openFolder: function () {
+	    		startAction('ch.file.openFolder', [this.props.file])();
 	    	}
-	    })
+	    });
 
 	    view = React.renderComponent(<APP store={store}/>, document.getElementById('main'));
 	    </script>
