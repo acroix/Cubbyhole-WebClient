@@ -87,6 +87,7 @@
 
 			dispatcher.on('ch.file.openFolder', function (file) {
 				fileManager.list(file.id).then(function (files) {
+					store.showShares = false;
 					store.currentFile = file;
 					store.files = files;
 					view.forceUpdate();
@@ -98,13 +99,7 @@
 			dispatcher.on('ch.file.openParent', function (currentFile) {
 				if (store.currentFile) {
 					fileManager.getFileById(store.currentFile.parent).then(function (file) {
-						store.currentFile = file;
-
-						fileManager.list(store.currentFile.id).then(function (files) {
-							console.log(files)
-							store.files = files;
-							view.forceUpdate()
-						});
+						dispatcher.trigger('ch.file.openFolder', [file]);
 					})
 				}
 			})	
@@ -119,6 +114,18 @@
 				}).catch(function (error) {
 					console.error(error);
 				});
+			})
+
+			dispatcher.on('ch.file.getShares', function (file) {
+				fileManager.getShares(file.id).then(function (shares) {
+					if (shares.length > 0) {
+						store.shares = shares;
+						store.showShares = true;
+						view.forceUpdate();
+					}
+				}).catch(function (error) {
+					console.error(error)
+				})
 			})
 
 			function startAction(name, args) {
@@ -144,7 +151,7 @@
 	    			<NavBar />
 	    			<div className="row">
 	    				<div className="large-3 medium-4 columns">
-	    					<SideBar />
+	    					<SideBar store={this.props.store} />
 	    				</div>
 	    				<div className="large-9 medium-8 columns">
 	    					<Content store={this.props.store} />
@@ -216,7 +223,7 @@
 	    			<input ref="accountId" type="text" placeholder="account id" />
 	    			<select ref="file">
 	    				{
-	    					store.files.map(function (file) {
+	    					this.props.store.files.map(function (file) {
 	    						return file.isFolder === false ? <option value={file.id}>{file.name}</option> : ""
 	    					})
 	    				}
@@ -248,23 +255,48 @@
 	    	render: function () {
 	    		return <div className="page-content">
 	    			<FileViewer store={this.props.store} />
+	    			{store.showShares ? <SharesViewer store={this.props.store} /> : null}
 	    		</div>
 	    	}
 	    });
+
+
+	    var SharesViewer = React.createClass({
+	    	render: function () {
+	    		return <div className="panel callout radius">
+	    			<h4>Shares</h4>	
+	    			{
+	    				this.props.store.shares.map(function (share) {
+	    					return <Share share={share} />
+	    				})
+	    			}
+	    		</div>
+	    	}
+	    })
+
+
+	    var Share = React.createClass({
+	    	render: function () {
+	    		return <div>
+	    			<span>{this.props.share.file}&nbsp;</span>
+	    			<span>{this.props.share.permission}&nbsp;</span>
+	    		</div>
+	    	}
+	    })
 
 	    var FileViewer = React.createClass({
 	    	render: function () {
 	    		return <div>
 	    		<h2>Files</h2>
 	    			{
-						store.currentFile && (store.currentFile.parent !== 0) ? 
+						this.props.store.currentFile && (this.props.store.currentFile.parent !== 0) ? 
 	    				<button onClick={this.getParent}>
 	    					parent folder
 	    				</button> : null
 	    			}
 
 	    			{
-	    				store.files.map(function (file) {
+	    				this.props.store.files.map(function (file) {
 	    					return <File file={file} />
 	    				})
 	    			}
@@ -278,7 +310,7 @@
 	    var File = React.createClass({
 	    	render: function () {
 	    		return <div>
-	    			<span className="fileInfos" onDoubleClick={this.props.file.isFolder ? this.openFolder : null}>
+	    			<span className="fileInfos" onClick={this.getShares} onDoubleClick={this.props.file.isFolder ? this.openFolder : null}>
 	    				<img className="fileImage" src={this.props.file.isFolder ? "/app/assets/folder.png" : "/app/assets/file.png"} />
 	    				<span>{this.props.file.id}&nbsp;</span> 
 	    				<span>{this.props.file.name}&nbsp;</span> 
@@ -286,11 +318,13 @@
 	    			</span>
 	    			<span onClick={startAction("ch.file.delete", [this.props.file])}>delete&nbsp;</span>
 	    			<span onClick={startAction("ch.file.copy", [this.props.file])}>copy&nbsp;</span>
-
 	    		</div>
 	    	},
 	    	openFolder: function () {
 	    		startAction('ch.file.openFolder', [this.props.file])();
+	    	},
+	    	getShares : function () {
+	    		startAction('ch.file.getShares', [this.props.file])();
 	    	}
 	    });
 

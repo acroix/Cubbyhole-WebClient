@@ -64,3 +64,10 @@ FileManager.prototype.share = function (fileId, accountId, permission) {
         }
     });
 }
+
+FileManager.prototype.getShares = function (fileId) {
+    return this.http({
+        url: this.baseUrl + '/files/' + fileId + '/shares/',
+        method: 'GET'
+    });
+}
