@@ -36,8 +36,9 @@
 			var store = {}
 			store.files = []
 			store.currentFile = null;
+			store.shares = [];
 
-			var fileManager = new FileManager('http://37.187.46.33/api/v1/', req);
+			var fileManager = new FileManager('http://37.187.46.33/api/v1', req);
 
 			fileManager.list().then(function (files) {
 				return files.map(function (file) {
@@ -108,6 +109,18 @@
 				}
 			})	
 
+			dispatcher.on('ch.file.share', function (opts) {
+				fileManager.share(
+					opts.fileId, 
+					opts.accountId, 
+					opts.permission
+				).then(function (share) {
+					store.shares.push(share)
+				}).catch(function (error) {
+					console.error(error);
+				});
+			})
+
 			function startAction(name, args) {
 		    	return function () {
 		    		console.log('CALL TO ACTION :', name)
@@ -174,17 +187,62 @@
 	    	render: function () {
 	    		return <div className="page-sidebar">
 	    			<h2>Actions</h2>
-	    			<input ref="folderName" type="text" placeholder="folder name" />
-	    			<button type="button"
-	    				onClick={this.handleClick}>
-	    				create folder
-	    			</button>
+	    			<CreateFolder />
+					<ShareFile store={this.props.store}/>	    			
 				</div>
-	    	},
-	    	handleClick: function () {
-	    		startAction("ch.file.create", [{isFolder:true, name:this.refs.folderName.getDOMNode().value}])();
 	    	}
 	    });
+
+	    var CreateFolder = React.createClass({
+	    	render: function() {
+	    		return <div>
+	    			<h3>create folder</h3>
+	    			<input ref="folderName" type="text" placeholder="folder name" />
+	    			<button type="button"
+	    				onClick={this.createFolder}>
+	    				create folder
+	    			</button>
+	    		</div>
+	    	},
+			createFolder: function () {
+	    		startAction("ch.file.create", [{isFolder:true, name:this.refs.folderName.getDOMNode().value}])();
+	    	}
+	    })
+
+		var ShareFile = React.createClass({
+			render: function() {
+				return <div>
+					<h3>share file</h3>
+	    			<input ref="accountId" type="text" placeholder="account id" />
+	    			<select ref="file">
+	    				{
+	    					store.files.map(function (file) {
+	    						return file.isFolder === false ? <option value={file.id}>{file.name}</option> : ""
+	    					})
+	    				}
+	    			</select>
+	    			<select ref="permission">
+	    				<option value="READ">READ</option>
+	    				<option value="WRITE">WRITE</option>
+	    				<option value="LINK">LINK</option>
+	    				<option value="PERM">PERM</option>
+	    			</select>
+	    			<button type="button"
+	    				onClick={this.shareFile}>
+	    				share file
+	    			</button>
+	    		</div>
+			},
+			shareFile: function () {
+	    		startAction("ch.file.share", [{
+	    			fileId: this.refs.file.getDOMNode().value,
+	    			accountId: this.refs.accountId.getDOMNode().value,
+	    			permission: this.refs.permission.getDOMNode().value
+	    		}])();
+	    	}
+		})
+
+
 
 	    var Content = React.createClass({
 	    	render: function () {
@@ -199,14 +257,14 @@
 	    		return <div>
 	    		<h2>Files</h2>
 	    			{
-						this.props.store.currentFile && (this.props.store.currentFile.parent !== 0) ? 
+						store.currentFile && (store.currentFile.parent !== 0) ? 
 	    				<button onClick={this.getParent}>
 	    					parent folder
 	    				</button> : null
 	    			}
 
 	    			{
-	    				this.props.store.files.map(function (file) {
+	    				store.files.map(function (file) {
 	    					return <File file={file} />
 	    				})
 	    			}
@@ -228,6 +286,7 @@
 	    			</span>
 	    			<span onClick={startAction("ch.file.delete", [this.props.file])}>delete&nbsp;</span>
 	    			<span onClick={startAction("ch.file.copy", [this.props.file])}>copy&nbsp;</span>
+
 	    		</div>
 	    	},
 	    	openFolder: function () {

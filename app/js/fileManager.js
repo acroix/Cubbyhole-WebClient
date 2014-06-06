@@ -53,3 +53,14 @@ FileManager.prototype.copy = function(file) {
         }
     }).then(createFile);
 }
+
+FileManager.prototype.share = function (fileId, accountId, permission) {
+    return this.http({
+        url: this.baseUrl + '/files/' + fileId + '/shares/' + permission,
+        method: 'PUT',
+        data: {
+            account: accountId,
+            permission: permission
+        }
+    });
+}
