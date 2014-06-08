@@ -1,4 +1,29 @@
+.file {
+	background-color: #e2f1fa;
+	border-radius: 3px;
+	border: 1px solid #007295;
+	margin-bottom: 15px;
+	padding: 10px;
+}
+
 .fileImage {
 	width: 20px;
 	height: 20px;
+	margin: 5px;
+}
+
+.fileActions span {
+	color: #008cba;
+	cursor: pointer;
+}
+
+.fileActions span:hover {
+	color: #007ba0;
+	text-decoration: underline;
+}
+
+.closePanel {
+	cursor: pointer;
+	float: right;
+	color: darkcyan;
 }

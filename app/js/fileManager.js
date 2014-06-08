@@ -71,3 +71,10 @@ FileManager.prototype.getShares = function (fileId) {
         method: 'GET'
     });
 }
+
+FileManager.prototype.getShareLink = function(fileId) {
+    return this.http({
+        url: this.baseUrl + '/files/' + fileId  + '/link',
+        method: 'POST'
+    });
+}

@@ -3,6 +3,9 @@ var AccountManager = function (baseUrl, http) {
 	this.baseUrl = baseUrl;
 }
 
-AccountManager.prototype.getUser = function(userId) {
-	
+AccountManager.prototype.getAccountById = function(userId) {
+	return this.http({
+		url: this.baseUrl + '/accounts/partial/by-id/' + userId,
+		method: 'GET'
+	});
 }

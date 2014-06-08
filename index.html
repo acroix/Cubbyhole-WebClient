@@ -10,6 +10,9 @@
     <body>
     	<div id="main"></div>
 
+    	<script src="/app/bower_components/jquery/dist/jquery.min.js"></script>
+    	<script src="/app/bower_components/foundation/js/foundation.min.js"></script>
+
         <script src="http://fb.me/react-0.9.0.js"></script>
 	    <script src="http://fb.me/JSXTransformer-0.9.0.js"></script>
 
@@ -17,6 +20,7 @@
 		<script src="/app/bower_components/eventEmitter/EventEmitter.min.js"></script>
 
 		<script src="/app/js/fileManager.js"></script>
+		<script src="/app/js/accountManager.js"></script>
 		<script>
 			var view = null;
 			var req = (function($http, authBase64) {
@@ -37,8 +41,12 @@
 			store.files = []
 			store.currentFile = null;
 			store.shares = [];
+			store.accounts = {};
+			store.shareLink = "";
 
 			var fileManager = new FileManager('http://37.187.46.33/api/v1', req);
+			var accountManager = new AccountManager('http://37.187.46.33/api/v1', req);
+
 
 			fileManager.list().then(function (files) {
 				return files.map(function (file) {
@@ -49,7 +57,6 @@
 				store.files = files;
 				view.forceUpdate();
 			})
-
 
 			var dispatcher = new EventEmitter();
 
@@ -119,12 +126,27 @@
 			dispatcher.on('ch.file.getShares', function (file) {
 				fileManager.getShares(file.id).then(function (shares) {
 					if (shares.length > 0) {
-						store.shares = shares;
-						store.showShares = true;
-						view.forceUpdate();
+						for (var i = 0; i < shares.length; i++) {
+							accountManager.getAccountById(shares[i].account)
+								.then(function (account) {
+									store.shares = shares;
+									store.accounts[account.id] = account;
+									store.showShares = true;
+									view.forceUpdate();
+								});
+						}
 					}
 				}).catch(function (error) {
 					console.error(error)
+				})
+			})
+
+
+			dispatcher.on('ch.file.generateShareLink', function (fileId) {
+				fileManager.getShareLink(fileId).then(function (link) {
+					store.shareLink = link;
+					store.showShareLink = true;
+	    			view.forceUpdate()
 				})
 			})
 
@@ -206,6 +228,7 @@
 	    			<h3>create folder</h3>
 	    			<input ref="folderName" type="text" placeholder="folder name" />
 	    			<button type="button"
+	    				className="radius"
 	    				onClick={this.createFolder}>
 	    				create folder
 	    			</button>
@@ -235,6 +258,7 @@
 	    				<option value="PERM">PERM</option>
 	    			</select>
 	    			<button type="button"
+	    				className="radius"
 	    				onClick={this.shareFile}>
 	    				share file
 	    			</button>
@@ -256,6 +280,7 @@
 	    		return <div className="page-content">
 	    			<FileViewer store={this.props.store} />
 	    			{store.showShares ? <SharesViewer store={this.props.store} /> : null}
+	    			{store.showShareLink ? <ShareLink store={this.props.store} /> : null}
 	    		</div>
 	    	}
 	    });
@@ -264,6 +289,7 @@
 	    var SharesViewer = React.createClass({
 	    	render: function () {
 	    		return <div className="panel callout radius">
+	    			<span className="closePanel" onClick={this.closePanel}>×</span>
 	    			<h4>Shares</h4>	
 	    			{
 	    				this.props.store.shares.map(function (share) {
@@ -271,6 +297,10 @@
 	    				})
 	    			}
 	    		</div>
+	    	},
+	    	closePanel : function () {
+	    		store.showShares = false;
+				view.forceUpdate();
 	    	}
 	    })
 
@@ -278,7 +308,7 @@
 	    var Share = React.createClass({
 	    	render: function () {
 	    		return <div>
-	    			<span>{this.props.share.file}&nbsp;</span>
+	    			<span>{store.accounts[this.props.share.account].username}&nbsp;</span>
 	    			<span>{this.props.share.permission}&nbsp;</span>
 	    		</div>
 	    	}
@@ -290,7 +320,7 @@
 	    		<h2>Files</h2>
 	    			{
 						this.props.store.currentFile && (this.props.store.currentFile.parent !== 0) ? 
-	    				<button onClick={this.getParent}>
+	    				<button onClick={this.getParent} className="radius">
 	    					parent folder
 	    				</button> : null
 	    			}
@@ -309,24 +339,44 @@
 
 	    var File = React.createClass({
 	    	render: function () {
-	    		return <div>
+	    		return <div className="file">
 	    			<span className="fileInfos" onClick={this.getShares} onDoubleClick={this.props.file.isFolder ? this.openFolder : null}>
 	    				<img className="fileImage" src={this.props.file.isFolder ? "/app/assets/folder.png" : "/app/assets/file.png"} />
-	    				<span>{this.props.file.id}&nbsp;</span> 
 	    				<span>{this.props.file.name}&nbsp;</span> 
 	    				<span>{this.props.file.cdate.toLocaleString()}&nbsp;</span>
 	    			</span>
-	    			<span onClick={startAction("ch.file.delete", [this.props.file])}>delete&nbsp;</span>
-	    			<span onClick={startAction("ch.file.copy", [this.props.file])}>copy&nbsp;</span>
+	    			<span className="fileActions">
+		    			<span onClick={startAction("ch.file.delete", [this.props.file])}>delete&nbsp;</span>
+		    			<span onClick={startAction("ch.file.copy", [this.props.file])}>copy&nbsp;</span>
+		    			{this.props.file.isFolder ? null : <span onClick={this.generateShareLink}>generate share link</span>}
+	    			</span>
 	    		</div>
 	    	},
-	    	openFolder: function () {
+	    	openFolder : function () {
 	    		startAction('ch.file.openFolder', [this.props.file])();
 	    	},
 	    	getShares : function () {
 	    		startAction('ch.file.getShares', [this.props.file])();
+	    	},
+	    	generateShareLink : function () {
+	    		startAction('ch.file.generateShareLink', [this.props.file.id])();
 	    	}
 	    });
+
+
+		var ShareLink = React.createClass({
+			render: function () {
+				return <div id="sharePanel" className="panel callout radius">
+				<span className="closePanel" onClick={this.closePanel}>×</span>
+					<h4>Public link</h4>
+	    			<span>{this.props.store.shareLink}</span>
+	    		</div>
+			},
+			closePanel : function () {
+				store.showShareLink = false;
+	    		view.forceUpdate()
+			}
+		})
 
 	    view = React.renderComponent(<APP store={store}/>, document.getElementById('main'));
 	    </script>
