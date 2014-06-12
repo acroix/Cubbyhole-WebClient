@@ -72,9 +72,19 @@ FileManager.prototype.getShares = function (fileId) {
     });
 }
 
-FileManager.prototype.getShareLink = function(fileId) {
+FileManager.prototype.generateShareLink = function(fileId) {
     return this.http({
         url: this.baseUrl + '/files/' + fileId  + '/link',
         method: 'POST'
     });
+}
+
+FileManager.prototype.rename = function  (id, name) {
+    return this.http({
+        url:  this.baseUrl + '/files/' + id,
+        method: 'POST',
+        data: {
+            name: name
+        }
+    })
 }

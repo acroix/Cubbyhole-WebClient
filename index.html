@@ -43,9 +43,12 @@
 			store.shares = [];
 			store.accounts = {};
 			store.shareLink = "";
+			store.renamedFile = {}
 
-			var fileManager = new FileManager('http://37.187.46.33/api/v1', req);
-			var accountManager = new AccountManager('http://37.187.46.33/api/v1', req);
+			var baseUrl = "http://37.187.46.33/api/v1";
+
+			var fileManager = new FileManager(baseUrl, req);
+			var accountManager = new AccountManager(baseUrl, req);
 
 
 			fileManager.list().then(function (files) {
@@ -56,7 +59,7 @@
 			}).then(function (files) {
 				store.files = files;
 				view.forceUpdate();
-			})
+			});
 
 			var dispatcher = new EventEmitter();
 
@@ -72,7 +75,7 @@
 						console.error(error);
 					})
 				}
-			})
+			});
 
 			dispatcher.on('ch.file.delete', function (file) {
 				fileManager.delete(file.id).then(function (response) {
@@ -81,7 +84,7 @@
 				}).catch(function (error) {
 					console.error(error);
 				})
-			})
+			});
 
 			dispatcher.on('ch.file.copy', function (file) {
 				fileManager.copy(file).then(function (file) {
@@ -90,7 +93,7 @@
 				}).catch(function (error) {
 					console.error(error);
 				})
-			})
+			});
 
 			dispatcher.on('ch.file.openFolder', function (file) {
 				fileManager.list(file.id).then(function (files) {
@@ -101,7 +104,7 @@
 				}).catch(function (error) {
 					console.error(error);
 				})
-			})
+			});
 
 			dispatcher.on('ch.file.openParent', function (currentFile) {
 				if (store.currentFile) {
@@ -109,7 +112,7 @@
 						dispatcher.trigger('ch.file.openFolder', [file]);
 					})
 				}
-			})	
+			});	
 
 			dispatcher.on('ch.file.share', function (opts) {
 				fileManager.share(
@@ -121,7 +124,7 @@
 				}).catch(function (error) {
 					console.error(error);
 				});
-			})
+			});
 
 			dispatcher.on('ch.file.getShares', function (file) {
 				fileManager.getShares(file.id).then(function (shares) {
@@ -139,16 +142,28 @@
 				}).catch(function (error) {
 					console.error(error)
 				})
-			})
+			});
 
 
-			dispatcher.on('ch.file.generateShareLink', function (fileId) {
-				fileManager.getShareLink(fileId).then(function (link) {
-					store.shareLink = link;
-					store.showShareLink = true;
-	    			view.forceUpdate()
+			dispatcher.on('ch.file.generateShareLink', function (file) {
+				fileManager.generateShareLink(file.id).then(function (file) {
+					dispatcher.trigger('ch.file.showShareLink', [file]);
 				})
-			})
+			});
+
+			dispatcher.on('ch.file.showShareLink', function  (file) {
+				store.shareLink = baseUrl + '/f/' + file.permalink;;
+				store.showShareLink = true;
+	    		view.forceUpdate();
+			});
+
+			dispatcher.on('ch.file.rename', function  (opts) {
+				fileManager.rename(opts.file.id, opts.name).then(function  (file) {
+					opts.file.name = file.name;
+					store.renamedFile = null;
+					view.forceUpdate();
+				});
+			});
 
 			function startAction(name, args) {
 		    	return function () {
@@ -169,7 +184,7 @@
 
 	    var MainLayout = React.createClass({
 	    	render: function () {
-	    		return <div className="mainLayout">
+	    		return <div className="mainLayout" onBlur={this.stopRename}>
 	    			<NavBar />
 	    			<div className="row">
 	    				<div className="large-3 medium-4 columns">
@@ -180,6 +195,13 @@
 	    				</div>
 	    			</div>
 	    		</div>
+	    	},
+	    	stopRename : function  () {
+	    		if (store.renamedFile) {
+	    			console.log("toto")
+	    			store.renamedFile = null;
+	    			view.forceUpdate();
+	    		}
 	    	}
 	    });
 
@@ -340,15 +362,21 @@
 	    var File = React.createClass({
 	    	render: function () {
 	    		return <div className="file">
-	    			<span className="fileInfos" onClick={this.getShares} onDoubleClick={this.props.file.isFolder ? this.openFolder : null}>
+	    			<span className="fileInfos">
 	    				<img className="fileImage" src={this.props.file.isFolder ? "/app/assets/folder.png" : "/app/assets/file.png"} />
-	    				<span>{this.props.file.name}&nbsp;</span> 
+	    				{this.props.file === store.renamedFile ? 
+	    					<form onSubmit={this.rename}>
+	    						<input type="text" ref="fileName"></input>
+	    					</form> : 
+	    					<span onDoubleClick={this.props.file.isFolder ? this.openFolder : null}>{this.props.file.name}&nbsp;</span>}
 	    				<span>{this.props.file.cdate.toLocaleString()}&nbsp;</span>
 	    			</span>
 	    			<span className="fileActions">
+	    				<span onClick={this.renderRenameInput}>rename&nbsp;</span>
 		    			<span onClick={startAction("ch.file.delete", [this.props.file])}>delete&nbsp;</span>
 		    			<span onClick={startAction("ch.file.copy", [this.props.file])}>copy&nbsp;</span>
-		    			{this.props.file.isFolder ? null : <span onClick={this.generateShareLink}>generate share link</span>}
+		    			{this.props.file.isFolder ? null : <span onClick={this.generateShareLink}>show share link&nbsp;</span>}
+	    				{this.props.file.isFolder ? null : <span onClick={this.getShares}>show perms</span>}
 	    			</span>
 	    		</div>
 	    	},
@@ -359,7 +387,21 @@
 	    		startAction('ch.file.getShares', [this.props.file])();
 	    	},
 	    	generateShareLink : function () {
-	    		startAction('ch.file.generateShareLink', [this.props.file.id])();
+	    		if (this.props.file.permalink) {
+	    			startAction('ch.file.showShareLink', [this.props.file])();
+	    		}
+	    		else {
+	    			startAction('ch.file.generateShareLink', [this.props.file])();
+	    		}
+	    	},
+	    	renderRenameInput : function  (e) {
+	    		e.stopPropagation();
+	    		store.renamedFile = this.props.file;
+	    		view.forceUpdate();
+	    	},
+	    	rename : function  (e) {
+	    		e.preventDefault();
+	    		startAction('ch.file.rename', [{file : this.props.file , name : this.refs.fileName.getDOMNode().value}])();
 	    	}
 	    });
 
@@ -376,7 +418,7 @@
 				store.showShareLink = false;
 	    		view.forceUpdate()
 			}
-		})
+		});
 
 	    view = React.renderComponent(<APP store={store}/>, document.getElementById('main'));
 	    </script>

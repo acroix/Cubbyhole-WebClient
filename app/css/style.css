@@ -1,5 +1,5 @@
 .file {
-	background-color: #e2f1fa;
+	background-color: #F5FBFF;
 	border-radius: 3px;
 	border: 1px solid #007295;
 	margin-bottom: 15px;
@@ -26,4 +26,8 @@
 	cursor: pointer;
 	float: right;
 	color: darkcyan;
+}
+
+.file form {
+	display: inline-block;
 }
