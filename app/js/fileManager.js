@@ -86,5 +86,15 @@ FileManager.prototype.rename = function  (id, name) {
         data: {
             name: name
         }
-    })
+    });
+}
+
+FileManager.prototype.move = function  (fileId, dropId) {
+    return this.http({
+        url:  this.baseUrl + '/files/' + fileId,
+        method: 'POST',
+        data: {
+            parent: dropId
+        }
+    });
 }
