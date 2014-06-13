@@ -49,15 +49,19 @@
 			var accountManager = new AccountManager(baseUrl, req);
 
 
-			fileManager.list().then(function (files) {
-				return files.map(function (file) {
-					file.cdate = new Date(file.cdate);
-					return file;
-				})
-			}).then(function (files) {
-				store.files = files;
-				view.forceUpdate();
-			});
+			function listFiles () {
+				fileManager.list().then(function (files) {
+					return files.map(function (file) {
+						file.cdate = new Date(file.cdate);
+						return file;
+					})
+				}).then(function (files) {
+					store.files = files;
+					view.forceUpdate();
+				});
+			}
+
+			listFiles();
 
 			var dispatcher = new EventEmitter();
 
@@ -165,7 +169,7 @@
 
 			dispatcher.on('ch.file.drop', function  (opts) {
 				fileManager.move(opts.fileId, opts.dropId).then(function (file) {
-					view.forceUpdate();
+					listFiles();
 				});
 			});
 
