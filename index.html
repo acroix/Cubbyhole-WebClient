@@ -363,7 +363,7 @@
 	    	render: function () {
 	    		return <div className="file">
 	    			<span className="fileInfos">
-	    				<img className="fileImage" src={this.props.file.isFolder ? "/app/assets/folder.png" : "/app/assets/file.png"} />
+	    				<img className="fileImage" src={this.props.file.isFolder ? "app/assets/folder.png" : "app/assets/file.png"} />
 	    				{this.props.file === store.renamedFile ? 
 	    					<form onSubmit={this.rename}>
 	    						<input type="text" ref="fileName"></input>
