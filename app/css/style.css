@@ -1,9 +1,17 @@
 .file {
-	background-color: #F5FBFF;
+	background-color: white;
 	border-radius: 3px;
 	border: 1px solid #007295;
 	margin-bottom: 15px;
 	padding: 10px;
+}
+
+.file:hover {
+	background-color: #F5FBFF;
+}
+
+.file .fileName {
+	cursor: pointer;
 }
 
 .fileImage {

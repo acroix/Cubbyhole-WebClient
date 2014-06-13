@@ -368,7 +368,7 @@
 	    					<form onSubmit={this.rename}>
 	    						<input type="text" ref="fileName"></input>
 	    					</form> : 
-	    					<span onDoubleClick={this.props.file.isFolder ? this.openFolder : null}>{this.props.file.name}&nbsp;</span>}
+	    					<span className="fileName" onDoubleClick={this.props.file.isFolder ? this.openFolder : null}>{this.props.file.name}&nbsp;</span>}
 	    				<span>{this.props.file.cdate.toLocaleString()}&nbsp;</span>
 	    			</span>
 	    			<span className="fileActions">
