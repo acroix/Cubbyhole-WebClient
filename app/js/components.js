@@ -186,9 +186,9 @@ var File = React.createClass({
     render: function () {
         return <div 
         className="file"
-        draggable={!this.props.file.isFolder ? "true" : null}
-        onDragEnd={!this.props.file.isFolder ? this.dragEnd : null}
-        onDragStart={!this.props.file.isFolder ? this.dragStart : null}
+        draggable="true"
+        onDragEnd={this.dragEnd}
+        onDragStart={this.dragStart}
         onDragOver={this.props.file.isFolder ? this.dragOver : null}
         onDrop={this.props.file.isFolder ? this.drop : null}
         >
