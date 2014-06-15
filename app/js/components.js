@@ -206,7 +206,8 @@ var File = React.createClass({
                 <span onClick={startAction("ch.file.delete", [this.props.file])}>delete&nbsp;</span>
                 <span onClick={startAction("ch.file.copy", [this.props.file])}>copy&nbsp;</span>
                 {this.props.file.isFolder ? null : <span onClick={this.generateShareLink}>show share link&nbsp;</span>}
-                {this.props.file.isFolder ? null : <span onClick={this.getShares}>show perms</span>}
+                {this.props.file.isFolder ? null : <span onClick={this.getShares}>show perms&nbsp;</span>}
+                {this.props.file.isFolder ? null : <span><a href={baseUrl + "/files/" + this.props.file.id + "/raw"}>download</a></span>}
             </span>
         </div>
     },
@@ -247,6 +248,9 @@ var File = React.createClass({
         var dropId = this.props.file.id;
         var fileId = Number(e.nativeEvent.dataTransfer.getData('text'))
         startAction('ch.file.drop', [{fileId: fileId, dropId: dropId}])();
+    },
+    download: function  () {
+        startAction('ch.file.download', [this.props.file])();
     }
 });
 

@@ -110,9 +110,12 @@
 
 			dispatcher.on('ch.file.openParent', function (currentFile) {
 				if (store.currentFile) {
-					fileManager.getFileById(store.currentFile.parent).then(function (file) {
+					fileManager.getFileById(store.currentFile.parent)
+					.then(function (file) {
 						dispatcher.trigger('ch.file.openFolder', [file]);
-					})
+					}).catch(function  (error) {
+						console.error(error)
+					});
 				}
 			});	
 
@@ -143,14 +146,16 @@
 					}
 				}).catch(function (error) {
 					console.error(error)
-				})
+				});
 			});
 
 
 			dispatcher.on('ch.file.generateShareLink', function (file) {
 				fileManager.generateShareLink(file.id).then(function (file) {
 					dispatcher.trigger('ch.file.showShareLink', [file]);
-				})
+				}).catch(function  (error) {
+					console.error(error)
+				});
 			});
 
 			dispatcher.on('ch.file.showShareLink', function  (file) {
@@ -164,12 +169,24 @@
 					opts.file.name = file.name;
 					store.renamedFile = null;
 					view.forceUpdate();
+				}).catch(function  (error) {
+					console.error(error)
 				});
 			});
 
 			dispatcher.on('ch.file.drop', function  (opts) {
 				fileManager.move(opts.fileId, opts.dropId).then(function (file) {
 					listFiles();
+				}).catch(function  (error) {
+					console.error(error)
+				});
+			});
+
+			dispatcher.on('ch.file.download', function (file) {
+				fileManager.download(file.id).then(function  (bin) {
+					console.log(bin)
+				}).catch(function  (error) {
+					console.error(error)
 				});
 			});
 

@@ -81,7 +81,7 @@ FileManager.prototype.generateShareLink = function(fileId) {
 
 FileManager.prototype.rename = function  (id, name) {
     return this.http({
-        url:  this.baseUrl + '/files/' + id,
+        url: this.baseUrl + '/files/' + id,
         method: 'POST',
         data: {
             name: name
@@ -91,7 +91,7 @@ FileManager.prototype.rename = function  (id, name) {
 
 FileManager.prototype.move = function  (fileId, dropId) {
     return this.http({
-        url:  this.baseUrl + '/files/' + fileId,
+        url: this.baseUrl + '/files/' + fileId,
         method: 'POST',
         data: {
             parent: dropId
