@@ -61,8 +61,8 @@ var SideBar = React.createClass({
         return <div className="page-sidebar">
             <h2>Actions</h2>
             <CreateFolder />
-            <ShareFile store={this.props.store}/>
-            <UploadFile />                  
+            <UploadFile />  
+            <ShareFile store={this.props.store}/>                
         </div>
     }
 });
@@ -104,7 +104,9 @@ var UploadFile = React.createClass({
     render: function  () {
         return <div>
             <h3>Upload file </h3>
-            <div onDragOver={this.onDragOver} onDragEnd={this.onDragEnd} onClick={this.onClick} onDrop={this.onDrop} style={{width: '100px', height: '100px', backgroundColor: 'red'}}></div>
+            <div onDragOver={this.onDragOver} onDragEnd={this.onDragEnd} onClick={this.onClick} onDrop={this.onDrop} className="uploadZone">
+                <p>Drop file here</p>
+            </div>
             <form method="post" action={baseUrl + "/files/raw"} enctype="multipart/form-data">
                 <input type="file" name="content"></input>
                 <button className="radius" type="submit">Upload</button>

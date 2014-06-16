@@ -45,3 +45,15 @@
 .file form {
 	display: inline-block;
 }
+
+.uploadZone {
+	border: 5px dotted #007295;
+	border-radius: 6px;
+	width: 215px;
+	height: 100px;
+}
+
+.uploadZone p {
+	text-align: center;
+	margin-top: 30px;
+}
