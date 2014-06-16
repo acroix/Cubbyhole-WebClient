@@ -123,10 +123,6 @@ var UploadFile = React.createClass({
             <div onDragOver={this.onDragOver} onDragEnd={this.onDragEnd} onClick={this.onClick} onDrop={this.onDrop} className="uploadZone">
                 <p>Drop file here</p>
             </div>
-            <form method="post" action={baseUrl + "/files/raw"} enctype="multipart/form-data">
-                <input type="file" name="content"></input>
-                <button className="radius" type="submit">Upload</button>
-            </form>
         </div>
     }
 })
