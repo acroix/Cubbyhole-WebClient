@@ -21,7 +21,6 @@ var MainLayout = React.createClass({
     },
     stopRename : function  () {
         if (store.renamedFile) {
-            console.log("toto")
             store.renamedFile = null;
             view.forceUpdate();
         }
@@ -62,7 +61,8 @@ var SideBar = React.createClass({
         return <div className="page-sidebar">
             <h2>Actions</h2>
             <CreateFolder />
-            <ShareFile store={this.props.store}/>                   
+            <ShareFile store={this.props.store}/>
+            <UploadFile />                  
         </div>
     }
 });
@@ -81,6 +81,18 @@ var CreateFolder = React.createClass({
     },
     createFolder: function () {
         startAction("ch.file.create", [{isFolder:true, name:this.refs.folderName.getDOMNode().value}])();
+    }
+});
+
+var UploadFile = React.createClass({
+    render: function  () {
+        return <div>
+            <h3>Upload file </h3>
+            <form method="post" action={baseUrl + "/files/raw"} enctype="multipart/form-data">
+                <input type="file" name="content"></input>
+                <button className="radius" type="submit">Upload</button>
+            </form>
+        </div>
     }
 })
 
