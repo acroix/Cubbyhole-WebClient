@@ -11,8 +11,8 @@ var LoginForm = React.createClass({
     },
     render: function () {
         return <div>
-            <input type="text" ref="username" />
-            <input type="password" ref="password" />
+            <input placeholder="username" type="text" ref="username" />
+            <input placeholder="password" type="password" ref="password" />
             <button type="button" onClick={this.onClick}>login</button>
         </div>
     }
