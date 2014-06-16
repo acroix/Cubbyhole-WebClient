@@ -1,7 +1,20 @@
 /*** @jsx React.DOM */
 var APP = React.createClass({
     render: function () {
-        return <MainLayout store={this.props.store} />
+        return store.username ? <MainLayout store={this.props.store} /> : <LoginForm />
+    }
+});
+
+var LoginForm = React.createClass({
+    onClick: function () {
+        startAction('ch.login', [this.refs.username.getDOMNode().value, this.refs.password.getDOMNode().value])();
+    },
+    render: function () {
+        return <div>
+            <input type="text" ref="username" />
+            <input type="password" ref="password" />
+            <button type="button" onClick={this.onClick}>login</button>
+        </div>
     }
 });
 
@@ -28,6 +41,9 @@ var MainLayout = React.createClass({
 });
 
 var NavBar = React.createClass({
+    logoutClick: function () {
+        startAction('ch.logout')();
+    },
     render: function () {
         return <nav className="top-bar">
           <ul className="title-area">
@@ -39,12 +55,12 @@ var NavBar = React.createClass({
           <section className="top-bar-section">
             <ul className="right">
               <li>
-                <a href="#">Username</a>
+                <a href="#">{store.username}</a>
               </li>
               <li>
                 <a href="#">
                     <i className="fi-wrench"></i>
-                    <span>Settings</span>
+                    <span onClick={this.logoutClick}>Logout</span>
                 </a>
               </li>
               <li>

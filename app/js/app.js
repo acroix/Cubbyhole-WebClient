@@ -1,18 +1,3 @@
-var view = null;
-var req = (function($http, authBase64) {
-    return function(config) {
-        if (typeof config !== 'object')
-            config = {}
-
-        config.headers = config.headers || {};
-        config.headers.Authorization = authBase64;
-        config.type = 'json';
-        res = $http(config);
-        res.catch = res.fail;
-        return res;
-    }
-})(reqwest, 'Basic dXNlcjpwYXNz');
-
 var store = {}
 store.files = []
 store.currentFile = null;
@@ -20,6 +5,27 @@ store.shares = [];
 store.accounts = {};
 store.shareLink = "";
 store.renamedFile = {}
+store.username = '';
+store.password = '';
+
+var view = null;
+var req = (function($http, authBase64Provider) {
+    return function(config) {
+        if (typeof config !== 'object')
+            config = {}
+
+        config.headers = config.headers || {};
+        config.headers.Authorization = authBase64Provider();
+        config.type = 'json';
+        res = $http(config);
+        res.catch = res.fail;
+        return res;
+    }
+})(reqwest, function () {
+    console.log(store.username);
+    console.log(store.password);
+    return 'Basic ' + btoa(store.username + ':' + store.password);
+});
 
 var baseUrl = "http://37.187.46.33/api/v1";
 
@@ -38,8 +44,6 @@ function listFiles () {
         view.forceUpdate();
     });
 }
-
-listFiles();
 
 var dispatcher = new EventEmitter();
 
@@ -85,6 +89,21 @@ dispatcher.on('ch.file.copy', function (file) {
     }).catch(function (error) {
         console.error(error);
     })
+});
+
+dispatcher.on('ch.login', function (username, password) {
+    store.username = username;
+    store.password = password;
+    accountManager.whoami().then(function () {
+        listFiles();
+        view.forceUpdate();
+    });
+});
+
+dispatcher.on('ch.logout', function () {
+    store.username = '';
+    store.password = '';
+    view.forceUpdate();
 });
 
 dispatcher.on('ch.file.openFolder', function (file) {

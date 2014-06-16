@@ -9,3 +9,9 @@ AccountManager.prototype.getAccountById = function(userId) {
 		method: 'GET'
 	});
 }
+
+AccountManager.prototype.whoami = function () {
+    return this.http({
+        url: this.baseUrl + '/accounts/whoami'
+    });
+};
