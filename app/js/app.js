@@ -22,8 +22,6 @@ var req = (function($http, authBase64Provider) {
         return res;
     }
 })(reqwest, function () {
-    console.log(store.username);
-    console.log(store.password);
     return 'Basic ' + btoa(store.username + ':' + store.password);
 });
 
