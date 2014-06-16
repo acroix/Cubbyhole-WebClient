@@ -98,3 +98,14 @@ FileManager.prototype.move = function  (fileId, dropId) {
         }
     });
 }
+
+FileManager.prototype.upload = function (fileId, fileData) {
+    return this.http({
+        url: this.baseUrl + '/files/' + fileId + '/upload',
+        method: 'POST',
+        data: fileData,
+        processData: false,
+        contentType: undefined,
+        noContentType: true
+    });
+};

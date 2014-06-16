@@ -85,9 +85,26 @@ var CreateFolder = React.createClass({
 });
 
 var UploadFile = React.createClass({
+    onDrop: function (event) {
+        event.preventDefault();
+        var file = event.dataTransfer.files[0];
+        var formData = new FormData();
+        formData.append('content', file);
+        startAction('ch.file.createAndUpload', [{isFolder: false, name: file.name, content: formData}])();
+    },
+    onClick: function (event) {
+        console.log(event);
+    },
+    onDragOver: function (event) {
+        return false;
+    },
+    onDragEnd: function (event) {
+        return false;
+    },
     render: function  () {
         return <div>
             <h3>Upload file </h3>
+            <div onDragOver={this.onDragOver} onDragEnd={this.onDragEnd} onClick={this.onClick} onDrop={this.onDrop} style={{width: '100px', height: '100px', backgroundColor: 'red'}}></div>
             <form method="post" action={baseUrl + "/files/raw"} enctype="multipart/form-data">
                 <input type="file" name="content"></input>
                 <button className="radius" type="submit">Upload</button>

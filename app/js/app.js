@@ -27,30 +27,46 @@ var fileManager = new FileManager(baseUrl, req);
 var accountManager = new AccountManager(baseUrl, req);
 
 
-fileManager.list().then(function (files) {
-    return files.map(function (file) {
-        file.cdate = new Date(file.cdate);
-        return file;
-    })
-}).then(function (files) {
-    store.files = files;
-    view.forceUpdate();
-});
+function listFiles () {
+    fileManager.list().then(function (files) {
+        return files.map(function (file) {
+            file.cdate = new Date(file.cdate);
+            return file;
+        })
+    }).then(function (files) {
+        store.files = files;
+        view.forceUpdate();
+    });
+}
+
+listFiles();
 
 var dispatcher = new EventEmitter();
 
 dispatcher.on('ch.file.create', function (opts) {
-    if (opts.isFolder) {
-        fileManager.add(
-            opts.isFolder, 
-            opts.name, store.currentFile ? store.currentFile.id : 0
-        ).then(function (file) {
-            store.files.push(file);
-            view.forceUpdate();
-        }).catch(function (error) {
-            console.error(error);
-        })
-    }
+    fileManager.add(
+        opts.isFolder, 
+        opts.name, store.currentFile ? store.currentFile.id : 0
+    ).then(function (file) {
+        store.files.push(file);
+        view.forceUpdate();
+    }).catch(function (error) {
+        console.error(error);
+    });
+});
+
+dispatcher.on('ch.file.createAndUpload', function (opts) {
+    fileManager.add(
+        opts.isFolder, 
+        opts.name, store.currentFile ? store.currentFile.id : 0
+    ).then(function (file) {
+        store.files.push(file);
+        return fileManager.upload(file.id, opts.content);
+    }).then(function () {
+        view.forceUpdate();
+    }).catch(function (error) {
+        console.error(error);
+    });
 });
 
 dispatcher.on('ch.file.delete', function (file) {
@@ -84,9 +100,12 @@ dispatcher.on('ch.file.openFolder', function (file) {
 
 dispatcher.on('ch.file.openParent', function (currentFile) {
     if (store.currentFile) {
-        fileManager.getFileById(store.currentFile.parent).then(function (file) {
+        fileManager.getFileById(store.currentFile.parent)
+        .then(function (file) {
             dispatcher.trigger('ch.file.openFolder', [file]);
-        })
+        }).catch(function  (error) {
+            console.error(error)
+        });
     }
 }); 
 
@@ -117,14 +136,16 @@ dispatcher.on('ch.file.getShares', function (file) {
         }
     }).catch(function (error) {
         console.error(error)
-    })
+    });
 });
 
 
 dispatcher.on('ch.file.generateShareLink', function (file) {
     fileManager.generateShareLink(file.id).then(function (file) {
         dispatcher.trigger('ch.file.showShareLink', [file]);
-    })
+    }).catch(function  (error) {
+        console.error(error)
+    });
 });
 
 dispatcher.on('ch.file.showShareLink', function  (file) {
@@ -138,6 +159,24 @@ dispatcher.on('ch.file.rename', function  (opts) {
         opts.file.name = file.name;
         store.renamedFile = null;
         view.forceUpdate();
+    }).catch(function  (error) {
+        console.error(error)
+    });
+});
+
+dispatcher.on('ch.file.drop', function  (opts) {
+    fileManager.move(opts.fileId, opts.dropId).then(function (file) {
+        listFiles();
+    }).catch(function  (error) {
+        console.error(error)
+    });
+});
+
+dispatcher.on('ch.file.download', function (file) {
+    fileManager.download(file.id).then(function  (bin) {
+        console.log(bin)
+    }).catch(function  (error) {
+        console.error(error)
     });
 });
 
